@@ -1,8 +1,3 @@
-﻿using Syberry.Web.Services.Abstractions;
-using Syberry.Web.Services.Implementations;
-using System;
-using System.Threading.Tasks;
-using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -13,24 +8,15 @@ namespace Syberry.Telegram
 {
     public class Bot
     {
-        private static ITelegramBotClient _botClient;
-
-        private readonly IBelarusBankService _belarusBankService;
-
-        public Bot(IBelarusBankService belarusBankService)
-        {
-            _belarusBankService = belarusBankService;
-        }
-
-        private static ReceiverOptions _receiverOptions;
+        private ITelegramBotClient _botClient;
 
         private const string _botToken = "6633951609:AAGBsXaBiH30xEGw7KjLWkOss4AqSgvagDI";
 
-        private static string actualBank = string.Empty;
+        private string actualBank = string.Empty;
 
-        private static string actualCurrency = string.Empty;
+        private string actualCurrency = string.Empty;
 
-        public static async Task StartBotAsync()
+        public async Task StartBotAsync()
         {
             _botClient = new TelegramBotClient(_botToken);
             _receiverOptions = new ReceiverOptions
@@ -52,7 +38,7 @@ namespace Syberry.Telegram
             await Task.Delay(-1);
         }
 
-        public static Task ErrorHandler(ITelegramBotClient botClient, Exception error, CancellationToken cancellationToken)
+        public Task ErrorHandler(ITelegramBotClient botClient, Exception error, CancellationToken cancellationToken)
         {
             var ErrorMessage = error switch
             {
@@ -65,7 +51,7 @@ namespace Syberry.Telegram
             return Task.CompletedTask;
         }
 
-        public static async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
             try
             {
@@ -124,10 +110,10 @@ namespace Syberry.Telegram
                             );
                         }
 
-                        else if (message.Text.ToLower() == "usd" ||
+                        else if (actualBank != string.Empty && (message.Text.ToLower() == "usd" ||
                             message.Text.ToLower() == "eur" ||
                             message.Text.ToLower() == "gbp" ||
-                            message.Text.ToLower() == "jpy")
+                            message.Text.ToLower() == "jpy"))
                         {
                             actualCurrency = message.Text;
 
@@ -180,12 +166,20 @@ namespace Syberry.Telegram
 
                         }
 
-                        else if (message.Text.ToLower() == "курс на выбранный день")
+                        else if (actualBank != string.Empty && actualCurrency != string.Empty && 
+                            message.Text.ToLower() == "курс на выбранный день")
                         {
 
                         }
 
-                        else if (message.Text.ToLower() == "выбрать другой банк")
+                        else if (actualBank != string.Empty && actualCurrency != string.Empty &&
+                            message.Text.ToLower() == "собрать статистику")
+                        {
+
+                        }
+
+                        else if (actualBank != string.Empty && actualCurrency != string.Empty &&
+                            message.Text.ToLower() == "выбрать другой банк")
                         {
                             var replyMarkup = new ReplyKeyboardMarkup(new[]
 {
@@ -205,7 +199,8 @@ namespace Syberry.Telegram
 
                         }
 
-                        else if (message.Text.ToLower() == "выбрать другую валюту")
+                        else if (actualBank != string.Empty && actualCurrency != string.Empty && 
+                            message.Text.ToLower() == "выбрать другую валюту")
                         {
                             var replyMarkup = new ReplyKeyboardMarkup(new[]
 {
@@ -240,23 +235,18 @@ namespace Syberry.Telegram
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
-
             }
         }
 
-        private static async Task SendCurrencySelectionKeyboardAsync(long chatId)
+        private static void GenerateCurrencyChart()
         {
-            var replyMarkup = new ReplyKeyboardMarkup(new[]
-            {
-                                new[]
-                                {
-                                    new KeyboardButton("Национальный банк"),
-                                    new KeyboardButton("Альфабанк"),
-                                    new KeyboardButton("Беларусбанк")
-                                }
-                            });
+            double[] dataX = { 1, 2, 3, 4, 5 };
+            double[] dataY = { 1, 4, 9, 16, 25 };
 
-            await _botClient.SendTextMessageAsync(chatId, "Выберите валюту:", replyMarkup: replyMarkup);
+            ScottPlot.Plot myPlot = new();
+            myPlot.Add.Scatter(dataX, dataY);
+
+            myPlot.SavePng("quickstart.png", 400, 300);
         }
     }
 }
