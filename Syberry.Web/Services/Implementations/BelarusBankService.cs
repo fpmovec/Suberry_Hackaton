@@ -20,8 +20,7 @@ public class BelarusBankService : IBelarusBankService
     
     public async Task<IEnumerable<Rate>> GetBelarusBankRatesAsync()
     {
-        string redisKey = _settings.BankRedisKeys.BelarusBank + "_rates";
-        //var data = await GetAsync<IEnumerable<Rate>>(_settings.BelarusBankSettings.RatesUrl);
+        string redisKey = $"{_settings.BankRedisKeys.BelarusBank}_rates";
 
         IEnumerable<Rate>? ratesData = await _CacheService.GetByKeyAsync<IEnumerable<Rate>>(redisKey);
 

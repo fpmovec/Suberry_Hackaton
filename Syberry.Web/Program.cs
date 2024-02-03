@@ -1,6 +1,7 @@
 using Syberry.Web;
 
 using System.Text.Json.Serialization;
+using Syberry.Web.Constraints;
 using Syberry.Web.Services;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
@@ -26,6 +27,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.SectionName));
+builder.Services.Configure<RouteOptions>(opts =>
+{
+    opts.ConstraintMap.Add("bank", typeof(BankNameConstraint));
+});
+
 builder.Services.AddStackExchangeRedisCache(config =>
 {
     config.Configuration = "localhost:6379";
