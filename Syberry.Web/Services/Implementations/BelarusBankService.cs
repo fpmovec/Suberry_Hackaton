@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using Syberry.Web.Models;
 using Syberry.Web.Services.Abstractions;
 
@@ -13,9 +14,11 @@ public class BelarusBankService : IBelarusBankService
         _httpClientFactory = httpClientFactory;
     }
     
-    public async Task<Rate> BelarusBankRates()
+    public async Task <List<Rate>> BelarusBankRates()
     {
         var client = _httpClientFactory.CreateClient();
+        
+        var rates = new List<Rate>();
         
         var pageResponse = await client.GetAsync($"https://belarusbank.by/api/kurs_cards");
         
@@ -23,8 +26,22 @@ public class BelarusBankService : IBelarusBankService
 
         var jToken = JToken.Parse(content);
 
-        var rate = jToken.ToObject<Rate>();
+        foreach (var item in jToken)
+        {
+            var rate = new Rate
+            {
+                KursDateTime = item["kurs_date_time"]!.Value<DateTime>(),
+                UsdIn = item["kurs_date_time"]!.Value<double>(),
+                UsdOut = item["kurs_date_time"]!.Value<double>(),
+                EuroIn = item["kurs_date_time"]!.Value<double>(),
+                EuroOut = item["kurs_date_time"]!.Value<double>(),
+                RubIn = item["kurs_date_time"]!.Value<double>(),
+                RubOut = item["kurs_date_time"]!.Value<double>(),
+            };
+                
+            rates.Add(rate);
+        }
         
-        return rate;
+        return rates;
     }
 }
