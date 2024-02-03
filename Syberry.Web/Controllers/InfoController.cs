@@ -8,14 +8,20 @@ namespace Syberry.Web.Controllers;
 
 [ApiController]
 [Route("/api")]
-public class InfoController(
-    INationalBankService _nationalBankService,
-    IAlpfaBankService _alpfaBankService,
-    IBelarusBankService _belarusBankService
-    ) : ControllerBase
+public class InfoController: ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
     private readonly IAlpfaBankService _alpfaBankService;
+    private readonly INationalBankService _nationalBankService;
+
+    public InfoController(
+        IBelarusBankService belarusBankService,
+        IAlpfaBankService alpfaBankService, INationalBankService nationalBankService)
+    {
+        _alpfaBankService = alpfaBankService;
+        _nationalBankService = nationalBankService;
+        _belarusBankService = belarusBankService;
+    }
     
     [HttpGet("/banks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -81,12 +87,19 @@ public class InfoController(
         
         res.Add(aRate);
 
-        var item = res.Where(x => x.Name == bankName 
-                                  && x.Rates.Any(x => x.KursDateTime <= to 
-                                                        && x.KursDateTime >= from) 
-                                  && x.Rates.Any(x => x.Name == currencyCode));
+        var item = res.FirstOrDefault(x => x.Name == bankName);
         
-        return Ok(item);
+        var a = item.Rates;
+
+        var b = a.Where(x => x.KursDateTime <= to && x.KursDateTime >= from && x.Name == currencyCode).ToList();
+
+        var c = b.Select(x => new
+        {
+            currency = x.BuyRate,
+            date = x.KursDateTime
+        });
+        
+        return Ok(c);
     }
     
     /*[HttpGet("/Rate/rates")]
