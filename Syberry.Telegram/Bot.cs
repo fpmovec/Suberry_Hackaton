@@ -120,7 +120,9 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "собрать статистику")
                         {
-                            using var stream = new FileStream("quickstart.png", FileMode.Open, FileAccess.Read);
+                            //GenerateCurrencyChart();
+
+                            using var stream = new FileStream("stat.png", FileMode.Open, FileAccess.Read);
                            
                             await botClient.SendPhotoAsync(chat.Id, InputFile.FromStream(stream));                    
                         }
@@ -155,7 +157,7 @@ namespace Syberry.Telegram
             }
         }
 
-        private static void GenerateCurrencyChart()
+        private void GenerateCurrencyChart(DateTime[] dates, decimal rates)
         {
             double[] dataX = { 1, 2, 3, 4, 5 };
             double[] dataY = { 1, 4, 9, 16, 25 };
@@ -163,7 +165,7 @@ namespace Syberry.Telegram
             ScottPlot.Plot myPlot = new();
             myPlot.Add.Scatter(dataX, dataY);
 
-            myPlot.SavePng("quickstart.png", 400, 300);
+            myPlot.SavePng("stat.png", 400, 300);
         }
 
         public async Task SendBankSelectionKeyboardAsync(ITelegramBotClient bot, long chatId)
