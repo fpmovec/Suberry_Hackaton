@@ -10,11 +10,13 @@ namespace Syberry.Web.Services.Implementations;
 public class BelarusBankService : IBelarusBankService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ICacheService _CacheService;
     private readonly AppSettings _settings;
     
-    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options)
+    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options, ICacheService cacheService)
     {
         _httpClientFactory = httpClientFactory;
+        _CacheService = cacheService;
         _settings = options.Value;
     }
     
