@@ -61,13 +61,17 @@ public class InfoController: ControllerBase
         
         res.Add(aRate);
 
+        var nRate = await _nationalBankService.GetNationalBankAsync();
+        
+        res.Add(nRate);
+
         var item = res.FirstOrDefault(x => x.Name == bankName);
 
         var a = item.Rates;
         
         var b = a.FirstOrDefault(x => x.KursDateTime == date &&  x.Name == currencyCode);
 
-        var c = b.BuyRate;
+        var c = b.SellRate;
         
         return Ok(c);
     }
@@ -87,6 +91,10 @@ public class InfoController: ControllerBase
         
         res.Add(aRate);
 
+        var nRate = await _nationalBankService.GetNationalBankAsync();
+        
+        res.Add(nRate);
+        
         var item = res.FirstOrDefault(x => x.Name == bankName);
         
         var a = item.Rates;
@@ -95,7 +103,7 @@ public class InfoController: ControllerBase
 
         var c = b.Select(x => new
         {
-            currency = x.BuyRate,
+            currency = x.SellRate,
             date = x.KursDateTime
         });
         
