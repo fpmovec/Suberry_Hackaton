@@ -1,0 +1,6 @@
+@Syberry.Web_HostAddress = http://localhost:5258
+
+GET {{Syberry.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
