@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Syberry.Web.Models;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
 
@@ -8,19 +9,29 @@ namespace Syberry.Web.Controllers;
 public class RatesController : ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
+    private readonly IAlpfaBankService _alpfaBankService;
 
     public RatesController(
-        IHttpClientFactory httpClientFactory,
-        IBelarusBankService belarusBankService)
+        IBelarusBankService belarusBankService,
+        IAlpfaBankService alpfaBankService)
     {
+        _alpfaBankService = alpfaBankService;
         _belarusBankService = belarusBankService;
     }
     
     [HttpGet]
     public async Task<IActionResult> ParseRates()
     {
-        var bRate = await _belarusBankService.GetBelarusBankRatesAsync();
+        var res = new List<Bank>();
         
-        return Ok(bRate);
+        var bRate = await _belarusBankService.BelarusBankRates();
+        
+        res.Add(bRate);
+        
+        var aRate = await _alpfaBankService.AlpfaBankRates();
+        
+        res.Add(aRate);
+        
+        return Ok(res);
     }
 }
