@@ -87,12 +87,19 @@ public class InfoController: ControllerBase
         
         res.Add(aRate);
 
-        var item = res.Where(x => x.Name == bankName 
-                                  && x.Rates.Any(x => x.KursDateTime <= to 
-                                                        && x.KursDateTime >= from) 
-                                  && x.Rates.Any(x => x.Name == currencyCode));
+        var item = res.FirstOrDefault(x => x.Name == bankName);
         
-        return Ok(item);
+        var a = item.Rates;
+
+        var b = a.Where(x => x.KursDateTime <= to && x.KursDateTime >= from && x.Name == currencyCode).ToList();
+
+        var c = b.Select(x => new
+        {
+            currency = x.BuyRate,
+            date = x.KursDateTime
+        });
+        
+        return Ok(c);
     }
     
     /*[HttpGet("/Rate/rates")]
