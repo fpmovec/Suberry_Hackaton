@@ -19,7 +19,7 @@ public class RatesController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> ParseRates()
     {
-        var bRate = await _belarusBankService.BelarusBankRates();
+        var bRate = await _belarusBankService.GetBelarusBankRatesAsync();
         
         return Ok(bRate);
     }
