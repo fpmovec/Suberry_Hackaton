@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Syberry.Web.Models;
 using Syberry.Web.Services.Abstractions;
@@ -8,10 +9,12 @@ namespace Syberry.Web.Services.Implementations;
 public class BelarusBankService : IBelarusBankService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly AppSettings _settings;
     
-    public BelarusBankService(IHttpClientFactory httpClientFactory)
+    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options)
     {
         _httpClientFactory = httpClientFactory;
+        _settings = options.Value;
     }
     
     public async Task <List<Rate>> BelarusBankRates()
