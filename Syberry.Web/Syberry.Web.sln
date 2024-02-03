@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syberry.Web", "Syberry.Web.csproj", "{A3416A93-9AF0-42A4-B6E3-F5C5BB34C5F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syberry.Telegram", "Syberry.Telegram\Syberry.Telegram.csproj", "{2A7A1D00-7BDE-486E-8CE4-137DF33288C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Syberry.Telegram", "..\Syberry.Telegram\Syberry.Telegram.csproj", "{8CEDDA60-BD04-463A-9B99-91EE996D698C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		{A3416A93-9AF0-42A4-B6E3-F5C5BB34C5F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3416A93-9AF0-42A4-B6E3-F5C5BB34C5F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3416A93-9AF0-42A4-B6E3-F5C5BB34C5F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2A7A1D00-7BDE-486E-8CE4-137DF33288C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2A7A1D00-7BDE-486E-8CE4-137DF33288C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2A7A1D00-7BDE-486E-8CE4-137DF33288C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2A7A1D00-7BDE-486E-8CE4-137DF33288C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CEDDA60-BD04-463A-9B99-91EE996D698C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CEDDA60-BD04-463A-9B99-91EE996D698C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CEDDA60-BD04-463A-9B99-91EE996D698C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CEDDA60-BD04-463A-9B99-91EE996D698C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
