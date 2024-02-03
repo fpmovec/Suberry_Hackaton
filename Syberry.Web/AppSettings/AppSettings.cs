@@ -4,5 +4,6 @@ public class AppSettings
 {
     public const string SectionName = nameof(AppSettings);
     public BelarusBankSettings BelarusBankSettings { get; set; }
-    
+    public BankRedisKeys BankRedisKeys { get; set; }
+
 }

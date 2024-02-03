@@ -1,6 +1,7 @@
 using Syberry.Web;
 
 using System.Text.Json.Serialization;
+using Syberry.Web.Services;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
 
@@ -13,6 +14,7 @@ builder.Services.AddHttpClient("CommonFactory", _ => { })
     });
 
 builder.Services.AddScoped<IBelarusBankService, BelarusBankService>();
+builder.Services.AddSingleton<ICacheService, CacheService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -26,7 +28,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.SectionName));
 builder.Services.AddStackExchangeRedisCache(config =>
 {
-    config.Configuration = "localhost:8001";
+    config.Configuration = "localhost:6379";
     config.InstanceName = "local";
 });
 
