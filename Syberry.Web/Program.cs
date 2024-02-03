@@ -1,3 +1,5 @@
+using Syberry.Web;
+
 using System.Text.Json.Serialization;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
@@ -21,7 +23,16 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection(AppSettings.SectionName));
+builder.Services.AddStackExchangeRedisCache(config =>
+{
+    config.Configuration = "localhost:8001";
+    config.InstanceName = "local";
+});
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
