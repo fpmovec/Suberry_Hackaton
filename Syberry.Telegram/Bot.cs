@@ -132,7 +132,7 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "собрать статистику")
                         {
-                            //GenerateCurrencyChart();
+                            GenerateCurrencyChart();
 
                             using var stream = new FileStream("stat.png", FileMode.Open, FileAccess.Read);
 
@@ -169,7 +169,7 @@ namespace Syberry.Telegram
             }
         }
 
-        private void GenerateCurrencyChart(DateTime[] dates, decimal rates)
+        private void GenerateCurrencyChart()
         {
             double[] dataX = { 1, 2, 3, 4, 5 };
             double[] dataY = { 1, 4, 9, 16, 25 };
