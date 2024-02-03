@@ -9,22 +9,24 @@ namespace Syberry.Web.Services.Implementations;
 
 public class BelarusBankService : IBelarusBankService
 {
-    private readonly ICacheService _CacheService;
+    //private readonly ICacheService _CacheService;
     private readonly AppSettings _settings;
     private readonly HttpClient _client;
     
-    public BelarusBankService(IOptions<AppSettings> options, ICacheService cacheService,HttpClient client)
+    public BelarusBankService(IOptions<AppSettings> options,
+        //ICacheService cacheService,
+        HttpClient client)
     {
-        _CacheService = cacheService;
+        //_CacheService = cacheService;
         _client = client;
         _settings = options.Value;
     }
     
     public async Task<Bank> BelarusBankRates()
     {
-        Bank? cacheData = await _CacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.BelarusBank);
-        if (cacheData == null)
-        {
+        //Bank? cacheData = await _CacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.BelarusBank);
+        //if (cacheData == null)
+        //{
             var belarusRates = new List<BelarusBankDto>();
                     
                     var rates = new List<Rate>();
@@ -83,16 +85,16 @@ public class BelarusBankService : IBelarusBankService
                         
                         rates.Add(eur);
                     }
-                    
-                    cacheData = new Bank
-                    {
-                        Name = "BelarusBank",
-                        Rates = rates
-                    };
 
-                    await _CacheService.UpdateOrCreateAsync(_settings.BankRedisKeys.BelarusBank, cacheData, default);
-        }
-        
+        var cacheData = new Bank
+        {
+            Name = "BelarusBank",
+            Rates = rates
+        };
+
+        //            await _CacheService.UpdateOrCreateAsync(_settings.BankRedisKeys.BelarusBank, cacheData, default);
+        //}
+
         return cacheData;
     }
 

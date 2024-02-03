@@ -8,20 +8,18 @@ namespace Syberry.Web.Controllers;
 
 [ApiController]
 [Route("/api")]
-public class InfoController(
-    INationalBankService _nationalBankService,
-    IAlpfaBankService _alpfaBankService,
-    IBelarusBankService _belarusBankService
-    ) : ControllerBase
+public class InfoController: ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
     private readonly IAlpfaBankService _alpfaBankService;
+    private readonly INationalBankService _nationalBankService;
 
     public InfoController(
         IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService)
+        IAlpfaBankService alpfaBankService, INationalBankService nationalBankService)
     {
         _alpfaBankService = alpfaBankService;
+        _nationalBankService = nationalBankService;
         _belarusBankService = belarusBankService;
     }
     
@@ -51,7 +49,7 @@ public class InfoController(
     [HttpGet("/Rate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Task3 ([FromRoute] string currencyCode, string bankName, DateTime date)
+    public async Task<IActionResult> Task3 (string currencyCode, string bankName, DateTime date)
     {
         var res = new List<Bank>();
         
@@ -63,17 +61,21 @@ public class InfoController(
         
         res.Add(aRate);
 
-        var item = res.Where(x => x.Name == bankName 
-                                  && x.Rates.Any(x => x.KursDateTime == date) 
-                                  && x.Rates.Any(x => x.Name == currencyCode));
+        var item = res.FirstOrDefault(x => x.Name == bankName);
+
+        var a = item.Rates;
         
-        return Ok(item);
+        var b = a.FirstOrDefault(x => x.KursDateTime == date &&  x.Name == currencyCode);
+
+        var c = b.BuyRate;
+        
+        return Ok(c);
     }
     
     [HttpGet("/Rate/rates")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Task4 ([FromRoute] string currencyCode, string bankName, DateTime from, DateTime to)
+    public async Task<IActionResult> Task4 (string currencyCode, string bankName, DateTime from, DateTime to)
     {
         var res = new List<Bank>();
         
@@ -85,12 +87,19 @@ public class InfoController(
         
         res.Add(aRate);
 
-        var item = res.Where(x => x.Name == bankName 
-                                  && x.Rates.Any(x => x.KursDateTime <= to 
-                                                        && x.KursDateTime >= from) 
-                                  && x.Rates.Any(x => x.Name == currencyCode));
+        var item = res.FirstOrDefault(x => x.Name == bankName);
         
-        return Ok(item);
+        var a = item.Rates;
+
+        var b = a.Where(x => x.KursDateTime <= to && x.KursDateTime >= from && x.Name == currencyCode).ToList();
+
+        var c = b.Select(x => new
+        {
+            currency = x.BuyRate,
+            date = x.KursDateTime
+        });
+        
+        return Ok(c);
     }
     
     /*[HttpGet("/Rate/rates")]
@@ -108,11 +117,10 @@ public class InfoController(
         
         res.Add(aRate);
 
-        var list = res.Where(x => x.Name == bankName 
-                                  && x.Rates.Any(x => x.KursDateTime <= to 
-                                                      && x.KursDateTime >= from) 
-                                  && x.Rates.Any(x => x.Name == currencyCode))
-            .ToList();
+        var list = res.Where(x => x.Name == bankName
+                                  && x.Rates.Any(x => x.KursDateTime <= to
+                                                      && x.KursDateTime >= from)
+                                  && x.Rates.Any(x => x.Name == currencyCode));
         
         var stat = new StatisticsDto
         {

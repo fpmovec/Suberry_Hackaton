@@ -17,7 +17,7 @@ builder.Services.AddHttpClient("CommonFactory", _ => { })
 builder.Services.AddScoped<IBelarusBankService, BelarusBankService>();
 builder.Services.AddScoped<IAlpfaBankService, AlpfaBankService>();
 builder.Services.AddScoped<INationalBankService, NationalBankService>();
-builder.Services.AddSingleton<ICacheService, CacheService>();
+//builder.Services.AddSingleton<ICacheService, CacheService>();
 //builder.Services.AddSingleton<IRequestsService, RequestsService>();
 
 builder.Services.AddHttpClient<BelarusBankService>();
@@ -39,11 +39,11 @@ builder.Services.Configure<RouteOptions>(opts =>
     opts.ConstraintMap.Add("bank", typeof(BankNameConstraint));
 });
 
-builder.Services.AddStackExchangeRedisCache(config =>
-{
-    config.Configuration = "localhost:6379";
-    config.InstanceName = "local";
-});
+//builder.Services.AddStackExchangeRedisCache(config =>
+//{
+//    config.Configuration = "localhost:6379";
+//    config.InstanceName = "local";
+//});
 
 var app = builder.Build();
 

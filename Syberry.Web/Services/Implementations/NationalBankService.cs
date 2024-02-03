@@ -9,24 +9,26 @@ namespace Syberry.Web.Services.Implementations;
 public class NationalBankService : INationalBankService
 {
     private readonly HttpClient _client;
-    private readonly ICacheService _cacheService;
+    //private readonly ICacheService _cacheService;
     private readonly AppSettings _settings;
 
-    public NationalBankService(HttpClient client, ICacheService cacheService, IOptions<AppSettings> options)
+    public NationalBankService(HttpClient client,
+        //ICacheService cacheService,
+        IOptions<AppSettings> options)
     {
         _client = client;
-        _cacheService = cacheService;
+        //_cacheService = cacheService;
         _settings = options.Value;
     }
 
 
     public async Task<Bank> GetNationalBankAsync()
     {
-        Bank? cacheData = await _cacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.NationalBank);
+        //    Bank? cacheData = await _cacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.NationalBank);
 
-        if (cacheData is null)
-        {
-            var nationalRates = new List<NationalBankDto>();
+        //    if (cacheData is null)
+        //    {
+        var nationalRates = new List<NationalBankDto>();
                     
             var rates = new List<Rate>();
                     
@@ -61,12 +63,12 @@ public class NationalBankService : INationalBankService
                         rates.Add(rate);
             }
 
-            cacheData = new Bank()
+            var cacheData = new Bank()
             {
                 Name = "National Bank",
                 Rates = rates
             };
-        }
+        //}
 
         return cacheData;
     }
