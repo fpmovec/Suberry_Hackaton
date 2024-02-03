@@ -1,4 +1,4 @@
-﻿namespace Syberry.Web.Services;
+﻿namespace Syberry.Web.Services.Abstractions;
 
 public interface ICacheService
 { 

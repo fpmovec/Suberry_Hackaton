@@ -3,7 +3,7 @@ using Syberry.Web.Models.Dto;
 
 namespace Syberry.Web.Services.Abstractions;
 
-public interface IBelarusBankService
+public interface IAlpfaBankService
 {
-    Task <Bank> BelarusBankRates();
+    Task<Bank> AlpfaBankRates();
 }

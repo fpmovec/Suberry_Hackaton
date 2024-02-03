@@ -1,10 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using Syberry.Telegram;
 
-using Syberry.Telegram;
+Bot test = new();
 
-Console.WriteLine("Hello, World!");
-
-Bot.StartBotAsync();
+test.StartBotAsync();
 
 Console.WriteLine("Press ENTER to stop the bot");
+
 Console.ReadLine();
