@@ -10,22 +10,24 @@ public class AlpfaBankService : IAlpfaBankService
 {
     private readonly HttpClient _client;
     private readonly AppSettings _settings;
-    private readonly ICacheService _cacheService;
+    //private readonly ICacheService _cacheService;
     
-    public AlpfaBankService(IOptions<AppSettings> settings, HttpClient client, ICacheService cacheService)
+    public AlpfaBankService(IOptions<AppSettings> settings, HttpClient client
+        //ICacheService cacheService
+        )
     {
         _client = client;
-        _cacheService = cacheService;
+        //_cacheService = cacheService;
         _settings = settings.Value;
     }
     
     public async Task <Bank> AlpfaBankRates()
     {
 
-        Bank? cacheData = await _cacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.AlphaBank);
+        //Bank? cacheData = await _cacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.AlphaBank);
 
-        if (cacheData is null)
-        {
+        //if (cacheData is null)
+        //{
             var alpfaRates = new List<AlpfabankRateDto>();
         
             var pageResponse = await _client.GetAsync(_settings.AlphaBankSettings.RatesUrl);
@@ -50,7 +52,7 @@ public class AlpfaBankService : IAlpfaBankService
                 alpfaRates.Add(alpfaRate);
             }
 
-            cacheData = new Bank
+            var cacheData = new Bank
             {
                 Name = "AlpfaBank",
                 Rates = alpfaRates.Where(x => x.BuyIso == "BYN")
@@ -62,7 +64,7 @@ public class AlpfaBankService : IAlpfaBankService
                         KursDateTime = x.Date
                     }).ToList()
             };
-        }
+        //}
         
         
         return cacheData;

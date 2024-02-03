@@ -16,14 +16,6 @@ public class InfoController(
 {
     private readonly IBelarusBankService _belarusBankService;
     private readonly IAlpfaBankService _alpfaBankService;
-
-    public InfoController(
-        IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService)
-    {
-        _alpfaBankService = alpfaBankService;
-        _belarusBankService = belarusBankService;
-    }
     
     [HttpGet("/banks")]
     [ProducesResponseType(StatusCodes.Status200OK)]

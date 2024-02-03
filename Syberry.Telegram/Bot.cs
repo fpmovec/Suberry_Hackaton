@@ -102,8 +102,6 @@ namespace Syberry.Telegram
                                 await ApiService.GetBanksInfo("BelarusBank", actualCurrency, DateTime.Today);
                             if (banksInfo != null)
                             {
-
-
                                 await botClient.SendTextMessageAsync(
                                     chat.Id,
                                     $"{actualBank} - {actualCurrency} на {DateTime.Today}"
@@ -116,7 +114,6 @@ namespace Syberry.Telegram
                             }
                             else
                             {
-
                                 await botClient.SendTextMessageAsync(
                                     chat.Id,
                                     "Курс не найден"
