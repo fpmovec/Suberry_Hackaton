@@ -1,4 +1,3 @@
-﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -10,8 +9,6 @@ namespace Syberry.Telegram
     public class Bot
     {
         private ITelegramBotClient _botClient;
-
-        private ReceiverOptions _receiverOptions;
 
         private const string _botToken = "6633951609:AAGBsXaBiH30xEGw7KjLWkOss4AqSgvagDI";
 
@@ -92,6 +89,8 @@ namespace Syberry.Telegram
                                  message.Text.ToLower() == "беларусбанк")
                         {
                             actualBank = message.Text;
+
+                            _belarusBankService.GetBelarusBankRatesAsync
 
                             var replyMarkup = new ReplyKeyboardMarkup(new[]
                             {
