@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Syberry.Telegram
 {
@@ -14,15 +9,15 @@ namespace Syberry.Telegram
 
         private static readonly HttpClient _httpClient = new();
 
-        public static async Task<CurrencyBelarusRatesDto> GetTitle(string titleName)
+        public static async Task<Rate> GetBanksInfo(string bankName, string currencyName)
         {
-            using HttpResponseMessage response = await _httpClient.GetAsync($"{BaseQueryAddress}");
+            using HttpResponseMessage response = await _httpClient.GetAsync($"{BaseQueryAddress}api/v1/rates");
 
             string jsonInfo = await response.Content.ReadAsStringAsync();
 
-            CurrencyBelarusRatesDto res = JsonConvert.DeserializeObject<CurrencyBelarusRatesDto>(jsonInfo);
-
-            return res;
+            var data = JsonConvert.DeserializeObject<List<BanksInfo>>(jsonInfo);
+            
+            return data.FirstOrDefault(bank => bank.Name == bankName).Rates.FirstOrDefault(rate => rate.Name == currencyName);
         }
     }
 }
