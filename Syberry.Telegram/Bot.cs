@@ -62,13 +62,14 @@ namespace Syberry.Telegram
                 switch (update.Type)
                 {
                     case UpdateType.Message:
+
                         var message = update.Message;
                         var user = message.From;
 
                         Console.WriteLine($"{user.FirstName} ({user.Id}) написал сообщение: {message.Text}");
 
                         var chat = message.Chat;
-
+                        
                         if (message.Text.ToLower() == "/start")
                         {
                             await SendBankSelectionKeyboardAsync(botClient, chat.Id);
@@ -119,7 +120,9 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "собрать статистику")
                         {
-
+                            using var stream = new FileStream("quickstart.png", FileMode.Open, FileAccess.Read);
+                           
+                            await botClient.SendPhotoAsync(chat.Id, InputFile.FromStream(stream));                    
                         }
 
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
