@@ -31,12 +31,12 @@ public class BelarusBankService : IBelarusBankService
             var rate = new Rate
             {
                 KursDateTime = item["kurs_date_time"]!.Value<DateTime>(),
-                UsdIn = item["kurs_date_time"]!.Value<double>(),
-                UsdOut = item["kurs_date_time"]!.Value<double>(),
-                EuroIn = item["kurs_date_time"]!.Value<double>(),
-                EuroOut = item["kurs_date_time"]!.Value<double>(),
-                RubIn = item["kurs_date_time"]!.Value<double>(),
-                RubOut = item["kurs_date_time"]!.Value<double>(),
+                UsdIn = item["USDCARD_in"]!.Value<double>(),
+                UsdOut = item["USDCARD_out"]!.Value<double>(),
+                EuroIn = item["EURCARD_in"]!.Value<double>(),
+                EuroOut = item["EURCARD_out"]!.Value<double>(),
+                RubIn = item["RUBCARD_in"]!.Value<double>(),
+                RubOut = item["RUBCARD_out"]!.Value<double>(),
             };
                 
             rates.Add(rate);
