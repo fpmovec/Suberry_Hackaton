@@ -7,6 +7,7 @@ public class Controller1 : Controller
     // GET
     public IActionResult Index()
     {
+        int g = 5;
         return Ok();
     }
 }
