@@ -8,19 +8,29 @@ namespace Syberry.Web.Services.Implementations;
 public class BelarusBankService : IBelarusBankService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ICacheService _CacheService;
     private readonly AppSettings _settings;
     
-    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options)
+    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options, ICacheService cacheService)
     {
         _httpClientFactory = httpClientFactory;
+        _CacheService = cacheService;
         _settings = options.Value;
     }
     
     public async Task<IEnumerable<Rate>> GetBelarusBankRatesAsync()
     {
-        var data = await GetAsync<IEnumerable<Rate>>(_settings.BelarusBankSettings.RatesUrl);
+        string redisKey = $"{_settings.BankRedisKeys.BelarusBank}_rates";
 
-        return data;
+        IEnumerable<Rate>? ratesData = await _CacheService.GetByKeyAsync<IEnumerable<Rate>>(redisKey);
+
+        if (ratesData == null)
+        {
+            ratesData = await GetAsync<IEnumerable<Rate>>(_settings.BelarusBankSettings.RatesUrl);
+            await _CacheService.UpdateOrCreateAsync(redisKey, ratesData, default);
+        }
+        
+        return ratesData;
     }
 
 
