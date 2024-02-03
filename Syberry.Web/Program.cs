@@ -16,6 +16,9 @@ builder.Services.AddHttpClient("CommonFactory", _ => { })
 
 builder.Services.AddScoped<IBelarusBankService, BelarusBankService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddSingleton<IRequestsService, RequestsService>();
+
+builder.Services.AddHttpClient<RequestsService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
