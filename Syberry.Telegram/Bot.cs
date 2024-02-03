@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Syberry.Web.Services.Abstractions;
+using Syberry.Web.Services.Implementations;
+using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -9,9 +11,16 @@ using Telegram.Bot.Types.ReplyMarkups;
 
 namespace Syberry.Telegram
 {
-    public static class Bot
+    public class Bot
     {
         private static ITelegramBotClient _botClient;
+
+        private readonly IBelarusBankService _belarusBankService;
+
+        public Bot(IBelarusBankService belarusBankService)
+        {
+            _belarusBankService = belarusBankService;
+        }
 
         private static ReceiverOptions _receiverOptions;
 
@@ -93,6 +102,8 @@ namespace Syberry.Telegram
                                  message.Text.ToLower() == "беларусбанк")
                         {
                             actualBank = message.Text;
+
+                            _belarusBankService.GetBelarusBankRatesAsync
 
                             var replyMarkup = new ReplyKeyboardMarkup(new[]
                             {
