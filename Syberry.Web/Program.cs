@@ -1,5 +1,4 @@
 using Syberry.Web;
-
 using System.Text.Json.Serialization;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
@@ -13,6 +12,7 @@ builder.Services.AddHttpClient("CommonFactory", _ => { })
     });
 
 builder.Services.AddScoped<IBelarusBankService, BelarusBankService>();
+builder.Services.AddScoped<IAlpfaBankService, AlpfaBankService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
