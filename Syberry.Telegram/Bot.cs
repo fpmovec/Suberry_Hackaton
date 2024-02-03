@@ -100,16 +100,28 @@ namespace Syberry.Telegram
                         {
                             Rate banksInfo = 
                                 await ApiService.GetBanksInfo("BelarusBank", actualCurrency, DateTime.Today);
+                            if (banksInfo != null)
+                            {
 
-                            await botClient.SendTextMessageAsync(
-                                chat.Id,
-                                $"{actualBank} - {actualCurrency} на {DateTime.Today}"
-                            );
 
-                            await botClient.SendTextMessageAsync(
-                                chat.Id,
-                                $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
-                            );
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    $"{actualBank} - {actualCurrency} на {DateTime.Today}"
+                                );
+
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
+                                );
+                            }
+                            else
+                            {
+
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    "Курс не найден"
+                                );
+                            }
 
                         }
 
