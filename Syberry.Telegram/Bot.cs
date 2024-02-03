@@ -5,7 +5,6 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Syberry.Telegram
 {
@@ -99,17 +98,30 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "курс на текущий день")
                         {
-                            Rate banksInfo = await ApiService.GetBanksInfo(actualBank, actualCurrency);
+                            Rate banksInfo = 
+                                await ApiService.GetBanksInfo("BelarusBank", actualCurrency, DateTime.Today);
+                            if (banksInfo != null)
+                            {
 
-                            await botClient.SendTextMessageAsync(
-                                chat.Id,
-                                $"{actualBank} - {actualCurrency} на {DateTime.Today}"
-                            );
 
-                            await botClient.SendTextMessageAsync(
-                                chat.Id,
-                                $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
-                            );
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    $"{actualBank} - {actualCurrency} на {DateTime.Today}"
+                                );
+
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
+                                );
+                            }
+                            else
+                            {
+
+                                await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                    "Курс не найден"
+                                );
+                            }
 
                         }
 
