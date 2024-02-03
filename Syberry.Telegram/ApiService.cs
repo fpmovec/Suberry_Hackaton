@@ -9,7 +9,7 @@ namespace Syberry.Telegram
 
         private static readonly HttpClient _httpClient = new();
 
-        public static async Task<List<BanksInfo>> GetBanksInfo()
+        public static async Task<Rate> GetBanksInfo(string bankName, string currencyName)
         {
             using HttpResponseMessage response = await _httpClient.GetAsync($"{BaseQueryAddress}api/v1/rates");
 
@@ -17,7 +17,7 @@ namespace Syberry.Telegram
 
             var data = JsonConvert.DeserializeObject<List<BanksInfo>>(jsonInfo);
             
-            return data;
+            return data.FirstOrDefault(bank => bank.Name == bankName).Rates.FirstOrDefault(rate => rate.Name == currencyName);
         }
     }
 }

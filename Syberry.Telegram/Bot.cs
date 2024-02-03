@@ -5,6 +5,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Syberry.Telegram
 {
@@ -98,7 +99,8 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "курс на текущий день")
                         {
-                            
+                            Rate banksInfo = await ApiService.GetBanksInfo(actualBank, actualCurrency);
+
                             await botClient.SendTextMessageAsync(
                                 chat.Id,
                                 $"{actualBank} - {actualCurrency} на {DateTime.Today}"
@@ -106,7 +108,7 @@ namespace Syberry.Telegram
 
                             await botClient.SendTextMessageAsync(
                                 chat.Id,
-                                $"Курс на покупку: {0}, курс на продажу: {0}"
+                                $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
                             );
 
                         }
@@ -114,6 +116,7 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty && 
                             message.Text.ToLower() == "курс на выбранный день")
                         {
+
 
                         }
 
