@@ -124,27 +124,6 @@ namespace Syberry.Telegram
                             {
                                 new[]
                                 {
-                                    new KeyboardButton("USD"),
-                                    new KeyboardButton("EUR"),
-                                    new KeyboardButton("GBP"),
-                                    new KeyboardButton("JPY")
-                                }
-                        });
-
-                            await botClient.SendTextMessageAsync(
-                                chat.Id,
-                                $"Выбран банк: {actualBank}. Выбрана валюта: {actualCurrency}",
-                                replyMarkup: replyMarkup
-                            );
-                        }
-
-                        else if (actualCurrency != string.Empty && actualBank != string.Empty)
-                        {
-
-                            var replyMarkup = new ReplyKeyboardMarkup(new[]
-                            {
-                                new[]
-                                {
                                     new KeyboardButton("Курс на текущий день"),
                                     new KeyboardButton("Курс на выбранный день"),
                                     new KeyboardButton("Собрать статистику"),
@@ -159,26 +138,87 @@ namespace Syberry.Telegram
                                 replyMarkup: replyMarkup
                             );
                         }
+
                         
-                        else if (message.Text.ToLower() == "курс на текущий день")
+                        else if (actualBank != string.Empty && actualCurrency != string.Empty &&
+                            message.Text.ToLower() == "курс на текущий день")
                         {
                             
+                            await botClient.SendTextMessageAsync(
+                                chat.Id,
+                                $"{actualBank} - {actualCurrency} на {DateTime.Today}"
+                            );
+
+
+                            await botClient.SendTextMessageAsync(
+                                chat.Id,
+                                $"Курс на покупку: {0}, курс на продажу: {0}"
+                            );
+
+                            var replyMarkup = new ReplyKeyboardMarkup(new[]
+{
+                                new[]
+                                {
+                                    new KeyboardButton("Курс на текущий день"),
+                                    new KeyboardButton("Курс на выбранный день"),
+                                    new KeyboardButton("Собрать статистику"),
+                                    new KeyboardButton("Выбрать другой банк"),
+                                    new KeyboardButton("Выбрать другую валюту")
+                                }
+                        });
+
+                        }
+
+                        else if (message.Text.ToLower() == "курс на выбранный день")
+                        {
+
+                        }
+
+                        else if (message.Text.ToLower() == "выбрать другой банк")
+                        {
+                            var replyMarkup = new ReplyKeyboardMarkup(new[]
+{
+                                new[]
+                                {
+                                    new KeyboardButton("Национальный банк"),
+                                    new KeyboardButton("Альфабанк"),
+                                    new KeyboardButton("Беларусбанк")
+                                }
+                            });
+
+                            await botClient.SendTextMessageAsync(
+                                chat.Id,
+                                "Выбери банк из меню снизу.",
+                                replyMarkup: replyMarkup
+                            );
+
+                        }
+
+                        else if (message.Text.ToLower() == "выбрать другую валюту")
+                        {
+                            var replyMarkup = new ReplyKeyboardMarkup(new[]
+{
+                                new[]
+                                {
+                                    new KeyboardButton("USD"),
+                                    new KeyboardButton("EUR"),
+                                    new KeyboardButton("GBP"),
+                                    new KeyboardButton("JPY")
+                                }
+                        });
+
+                            await botClient.SendTextMessageAsync(
+                                chat.Id,
+                                "Выбери валюту из меню снизу",
+                                replyMarkup: replyMarkup
+                            );
                         }
 
                         else
                         {
-                            string[] parts = message.Text.Split(' ');
-
-                            if (parts.Length == 1)
-                            {
-                                actualBank = parts[0];
-
-                                Console.WriteLine($"Текущий банк: {actualBank}");
-                            }
-
                             await botClient.SendTextMessageAsync(
                                 chat.Id,
-                                message.Text,
+                                "Ошибка: неизвестная команда",
                                 replyToMessageId: message.MessageId
                             );
                         }
@@ -189,6 +229,7 @@ namespace Syberry.Telegram
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
+
             }
         }
 
