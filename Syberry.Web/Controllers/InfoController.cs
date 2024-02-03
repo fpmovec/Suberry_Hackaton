@@ -8,20 +8,18 @@ namespace Syberry.Web.Controllers;
 
 [ApiController]
 [Route("/api")]
-public class InfoController(
-    INationalBankService _nationalBankService,
-    IAlpfaBankService _alpfaBankService,
-    IBelarusBankService _belarusBankService
-    ) : ControllerBase
+public class InfoController: ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
     private readonly IAlpfaBankService _alpfaBankService;
+    private readonly INationalBankService _nationalBankService;
 
     public InfoController(
         IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService)
+        IAlpfaBankService alpfaBankService, INationalBankService nationalBankService)
     {
         _alpfaBankService = alpfaBankService;
+        _nationalBankService = nationalBankService;
         _belarusBankService = belarusBankService;
     }
     
