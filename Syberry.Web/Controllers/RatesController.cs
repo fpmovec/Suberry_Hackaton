@@ -10,12 +10,14 @@ public class RatesController : ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
     private readonly IAlpfaBankService _alpfaBankService;
+    private readonly INationalBankService _nationalBank;
 
     public RatesController(
         IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService)
+        IAlpfaBankService alpfaBankService, INationalBankService nationalBank)
     {
         _alpfaBankService = alpfaBankService;
+        _nationalBank = nationalBank;
         _belarusBankService = belarusBankService;
     }
     
@@ -31,6 +33,10 @@ public class RatesController : ControllerBase
         var aRate = await _alpfaBankService.AlpfaBankRates();
         
         res.Add(aRate);
+
+        var nRate = await _nationalBank.GetNationalBankAsync();
+        
+        res.Add(nRate);
         
         return Ok(res);
     }

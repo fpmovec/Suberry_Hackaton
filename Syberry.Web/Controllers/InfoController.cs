@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Syberry.Web.Services.Abstractions;
 
 namespace Syberry.Web.Controllers;
 
 [ApiController]
 [Route("/api")]
-public class InfoController : ControllerBase
+public class InfoController(
+    INationalBankService _nationalBankService,
+    IAlpfaBankService _alpfaBankService,
+    IBelarusBankService _belarusBankService
+    ) : ControllerBase
 {
     [HttpGet("/banks")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -14,10 +19,18 @@ public class InfoController : ControllerBase
     [HttpGet("/banks/{bankName:bank}/currencies")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetCurrenciesByBankName([FromRoute] string bankName)
+    public async Task<IActionResult> GetCurrenciesByBankName([FromRoute] string bankName)
     {
-        //TODO: add logic
-        
-        return Ok();
+        switch (bankName.ToLower())
+        {
+            case "national":
+                return Ok(await _nationalBankService.GetCurrencies());
+            case "belarusbank":
+                return Ok(_belarusBankService.GetCurrencies());
+            case "alphabank":
+                return Ok(await _alpfaBankService.GetCurrencies());
+        }
+
+        return BadRequest();
     }
 }

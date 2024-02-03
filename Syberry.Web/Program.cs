@@ -1,6 +1,7 @@
 using Syberry.Web;
 using System.Text.Json.Serialization;
 using Syberry.Web.Constraints;
+using Syberry.Web.Models.Dto;
 using Syberry.Web.Services;
 using Syberry.Web.Services.Abstractions;
 using Syberry.Web.Services.Implementations;
@@ -15,10 +16,13 @@ builder.Services.AddHttpClient("CommonFactory", _ => { })
 
 builder.Services.AddScoped<IBelarusBankService, BelarusBankService>();
 builder.Services.AddScoped<IAlpfaBankService, AlpfaBankService>();
+builder.Services.AddScoped<INationalBankService, NationalBankService>();
 builder.Services.AddSingleton<ICacheService, CacheService>();
-builder.Services.AddSingleton<IRequestsService, RequestsService>();
+//builder.Services.AddSingleton<IRequestsService, RequestsService>();
 
-builder.Services.AddHttpClient<RequestsService>();
+builder.Services.AddHttpClient<BelarusBankService>();
+builder.Services.AddHttpClient<AlpfaBankService>();
+builder.Services.AddHttpClient<NationalBankService>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);

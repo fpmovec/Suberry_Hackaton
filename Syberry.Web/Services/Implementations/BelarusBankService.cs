@@ -9,86 +9,99 @@ namespace Syberry.Web.Services.Implementations;
 
 public class BelarusBankService : IBelarusBankService
 {
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly ICacheService _CacheService;
     private readonly AppSettings _settings;
+    private readonly HttpClient _client;
     
-    public BelarusBankService(IHttpClientFactory httpClientFactory, IOptions<AppSettings> options, ICacheService cacheService)
+    public BelarusBankService(IOptions<AppSettings> options, ICacheService cacheService,HttpClient client)
     {
-        _httpClientFactory = httpClientFactory;
         _CacheService = cacheService;
+        _client = client;
         _settings = options.Value;
     }
     
-    public async Task <Bank> BelarusBankRates()
+    public async Task<Bank> BelarusBankRates()
     {
-        var client = _httpClientFactory.CreateClient();
-        
-        var belarusRates = new List<BelarusBankDto>();
-        
-        var rates = new List<Rate>();
-        
-        var pageResponse = await client.GetAsync($"https://belarusbank.by/api/kurs_cards");
-        
-        var content = await pageResponse.Content.ReadAsStringAsync();
-
-        var jToken = JToken.Parse(content);
-
-        foreach (var item in jToken)
+        Bank? cacheData = await _CacheService.GetByKeyAsync<Bank>(_settings.BankRedisKeys.BelarusBank);
+        if (cacheData == null)
         {
-            var rate = new BelarusBankDto()
-            {
-                KursDateTime = item["kurs_date_time"]!.Value<DateTime>(),
-                UsdIn = item["USDCARD_in"]!.Value<double>(),
-                UsdOut = item["USDCARD_out"]!.Value<double>(),
-                EurIn = item["EURCARD_in"]!.Value<double>(),
-                EurOut = item["EURCARD_out"]!.Value<double>(),
-                RubIn = item["RUBCARD_in"]!.Value<double>(),
-                RubOut = item["RUBCARD_out"]!.Value<double>(),
-            };
-                
-            belarusRates.Add(rate);
+            var belarusRates = new List<BelarusBankDto>();
+                    
+                    var rates = new List<Rate>();
+                    
+                    var pageResponse = await _client.GetAsync(_settings.BelarusBankSettings.RatesUrl);
+                    
+                    var content = await pageResponse.Content.ReadAsStringAsync();
+            
+                    var jToken = JToken.Parse(content);
+            
+                    foreach (var item in jToken)
+                    {
+                        var rate = new BelarusBankDto()
+                        {
+                            KursDateTime = item["kurs_date_time"]!.Value<DateTime>(),
+                            UsdIn = item["USDCARD_in"]!.Value<double>(),
+                            UsdOut = item["USDCARD_out"]!.Value<double>(),
+                            EurIn = item["EURCARD_in"]!.Value<double>(),
+                            EurOut = item["EURCARD_out"]!.Value<double>(),
+                            RubIn = item["RUBCARD_in"]!.Value<double>(),
+                            RubOut = item["RUBCARD_out"]!.Value<double>(),
+                        };
+                            
+                        belarusRates.Add(rate);
+                    }
+            
+                    foreach (var x in belarusRates)
+                    {
+                        var usd = new Rate
+                        {
+                            Name = "USD",
+                            BuyRate = x.UsdOut,
+                            SellRate = x.UsdIn,
+                            KursDateTime = x.KursDateTime
+                        };
+                        
+                        rates.Add(usd);
+                        
+                        var rub = new Rate
+                        {
+                            Name = "RUB",
+                            BuyRate = x.RubOut,
+                            SellRate = x.RubIn,
+                            KursDateTime = x.KursDateTime
+                        };
+                        
+                        rates.Add(rub);
+                        
+                        var eur = new Rate
+                        {
+                            Name = "EUR",
+                            BuyRate = x.EurOut,
+                            SellRate = x.EurIn,
+                            KursDateTime = x.KursDateTime
+                        };
+                        
+                        rates.Add(eur);
+                    }
+                    
+                    cacheData = new Bank
+                    {
+                        Name = "BelarusBank",
+                        Rates = rates
+                    };
+
+                    await _CacheService.UpdateOrCreateAsync(_settings.BankRedisKeys.BelarusBank, cacheData, default);
         }
-
-        foreach (var x in belarusRates)
-        {
-            var usd = new Rate
-            {
-                Name = "USD",
-                BuyRate = x.UsdOut,
-                SellRate = x.UsdIn,
-                KursDateTime = x.KursDateTime
-            };
-            
-            rates.Add(usd);
-            
-            var rub = new Rate
-            {
-                Name = "RUB",
-                BuyRate = x.RubOut,
-                SellRate = x.RubIn,
-                KursDateTime = x.KursDateTime
-            };
-            
-            rates.Add(rub);
-            
-            var eur = new Rate
-            {
-                Name = "EUR",
-                BuyRate = x.EurOut,
-                SellRate = x.EurIn,
-                KursDateTime = x.KursDateTime
-            };
-            
-            rates.Add(eur);
-        }
         
-        var res = new Bank
+        return cacheData;
+    }
+
+    public CurrencyView GetCurrencies()
+    {
+        return new CurrencyView()
         {
-            Name = "BelarusBank",
-            Rates = rates
+            BankName = "Belarusbank",
+            Currencies = ["USD", "EUR", "RUB"]
         };
-        
-        return res;
     }
 }

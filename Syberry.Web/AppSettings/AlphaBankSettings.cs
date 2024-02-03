@@ -1,6 +1,6 @@
 ﻿namespace Syberry.Web;
 
-public class NationalBankSettings
+public class AlphaBankSettings
 {
     public string RatesUrl { get; set; }
 }

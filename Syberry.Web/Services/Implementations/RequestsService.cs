@@ -1,15 +1,12 @@
-﻿using Syberry.Web.Models;
+﻿using Microsoft.Extensions.Options;
+using Syberry.Web.Models;
 using Syberry.Web.Services.Abstractions;
 
 namespace Syberry.Web.Services.Implementations;
 
-public class RequestsService(HttpClient client) : IRequestsService
+public class RequestsService(HttpClient client, IOptions<AppSettings> options) : IRequestsService
 {
-    public Task PostAsync(string url, Bank data, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
+    private readonly AppSettings _settings = options.Value;
     public Task<Bank> GetAsync(string url, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();

@@ -19,7 +19,8 @@ public class CacheService(IDistributedCache distributedCache) : ICacheService
     {
         string jsonData = JsonConvert.SerializeObject(value);
 
-        await distributedCache.SetStringAsync(key, jsonData, default);
+        await distributedCache.SetStringAsync(key, jsonData, new DistributedCacheEntryOptions()
+            {SlidingExpiration = TimeSpan.FromMinutes(15) }, default);
     }
 
     public async Task RemoveFromCacheByKeyAsync(string key)

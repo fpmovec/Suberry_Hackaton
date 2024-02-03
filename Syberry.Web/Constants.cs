@@ -2,5 +2,5 @@
 
 public class Constants
 {
-    public static readonly List<string> BanksLists = ["Belarusbank", "Alphabank", "National bank"];
+    public static readonly List<string> BanksLists = ["belarusbank", "alphabank", "national"];
 }
