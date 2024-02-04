@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
+using Syberry.Web.Models;
+using Syberry.Web.Services.Abstractions;
 using System;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -5,8 +8,9 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Syberry.Telegram
+namespace Syberry.Telegram.Bot
 {
     public class Bot
     {
@@ -20,6 +24,18 @@ namespace Syberry.Telegram
 
         private string actualCurrency = string.Empty;
 
+        private readonly IAlpfaBankService _alpfaBankService;
+
+        private readonly IBelarusBankService _belarusBankService;
+
+        private readonly INationalBankService _nationalBankService;
+
+        public Bot(IServiceProvider serviceProvider)
+        {
+            _belarusBankService = serviceProvider.GetRequiredService<IBelarusBankService>();
+            _alpfaBankService = serviceProvider.GetRequiredService<IAlpfaBankService>();
+            _nationalBankService = serviceProvider.GetRequiredService<INationalBankService>();
+        }
         public async Task StartBotAsync()
         {
             _botClient = new TelegramBotClient(_botToken);
@@ -29,6 +45,7 @@ namespace Syberry.Telegram
                 {
                     UpdateType.Message,
                 },
+
                 ThrowPendingUpdates = true,
             };
 
@@ -37,22 +54,10 @@ namespace Syberry.Telegram
             _botClient.StartReceiving(UpdateHandler, ErrorHandler, _receiverOptions, cts.Token);
 
             var me = await _botClient.GetMeAsync();
+
             Console.WriteLine($"{me.FirstName} запущен!");
 
             await Task.Delay(-1);
-        }
-
-        public Task ErrorHandler(ITelegramBotClient botClient, Exception error, CancellationToken cancellationToken)
-        {
-            var ErrorMessage = error switch
-            {
-                ApiRequestException apiRequestException
-                    => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-                _ => error.ToString()
-            };
-
-            Console.WriteLine(ErrorMessage);
-            return Task.CompletedTask;
         }
 
         public async Task UpdateHandler(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
@@ -79,7 +84,20 @@ namespace Syberry.Telegram
                                  message.Text.ToLower() == "альфабанк" ||
                                  message.Text.ToLower() == "беларусбанк")
                         {
-                            actualBank = message.Text;
+                            switch (message.Text.ToLower())
+                            {
+                                case "национальный банк":
+                                    actualBank = "National Bank";
+                                    break;
+                                case "альфабанк":
+                                    actualBank = "Alfa Bank";
+                                    break;
+                                case "беларусбанк":
+                                    actualBank = "Belarus Bank";
+                                    break;
+                                default:
+                                    return;
+                            }
 
                             await SendCurrencySelectionKeyboardAsync(botClient, chat.Id, actualBank);
                         }
@@ -89,7 +107,7 @@ namespace Syberry.Telegram
                             message.Text.ToLower() == "gbp" ||
                             message.Text.ToLower() == "jpy"))
                         {
-                            actualCurrency = message.Text;
+                            actualCurrency = message.Text.ToUpper();
 
                             await SendActionSelectionKeyboardAsync(botClient, chat.Id, actualBank, actualCurrency);
                         }
@@ -98,19 +116,51 @@ namespace Syberry.Telegram
                         else if (actualBank != string.Empty && actualCurrency != string.Empty &&
                             message.Text.ToLower() == "курс на текущий день")
                         {
-                            Rate banksInfo = 
-                                await ApiService.GetBanksInfo("BelarusBank", actualCurrency, DateTime.Today);
-                            if (banksInfo != null)
-                            {
-                                await botClient.SendTextMessageAsync(
-                                    chat.Id,
-                                    $"{actualBank} - {actualCurrency} на {DateTime.Today}"
-                                );
+                            Bank info = null;
 
-                                await botClient.SendTextMessageAsync(
+                            switch (actualBank)
+                            {
+                                case "National Bank":
+                                    info = await _nationalBankService.GetNationalBankAsync();
+                                    break;
+                                case "Alfa Bank":
+                                    info = await _alpfaBankService.AlpfaBankRates();
+                                    break;
+                                case "Belarus Bank":
+                                    info = await _belarusBankService.BelarusBankRates();
+                                    break;
+                                default:
+                                    return;
+                            }
+
+                            if (info != null)
+                            {
+                                var sellInfo = info.Rates.FirstOrDefault(x => x.KursDateTime == DateTime.Today
+                                    && x.Name == actualCurrency).SellRate;
+
+                                var buyInfo = info.Rates.FirstOrDefault(x => x.KursDateTime == DateTime.Today
+                                    && x.Name == actualCurrency).BuyRate;
+
+                                if (sellInfo != null || buyInfo != null)
+                                {
+                                    await botClient.SendTextMessageAsync(
+                                        chat.Id,
+                                        $"{actualBank} - {actualCurrency} на {DateTime.Today}"
+                                    );
+
+                                    await botClient.SendTextMessageAsync(
                                     chat.Id,
-                                    $"Курс на покупку: {banksInfo.BuyRate}, курс на продажу: {banksInfo.SellRate}"
-                                );
+                                        $"Курс на покупку: {buyInfo}, курс на продажу: {sellInfo}."
+                                    );
+                                }
+                                
+                                else
+                                {
+                                    await botClient.SendTextMessageAsync(
+                                    chat.Id,
+                                        $"Курс не найден"
+                                    );
+                                }
                             }
                             else
                             {
@@ -197,7 +247,7 @@ namespace Syberry.Telegram
                     new KeyboardButton("Беларусбанк")
                 },
             })
-            { 
+            {
                 ResizeKeyboard = true
             };
 
@@ -231,6 +281,7 @@ namespace Syberry.Telegram
             );
         }
 
+
         public async Task SendActionSelectionKeyboardAsync(ITelegramBotClient bot, long chatId, string bank, string currency)
         {
             var replyMarkup = new ReplyKeyboardMarkup(new[]
@@ -261,6 +312,20 @@ namespace Syberry.Telegram
                 $"Выбран банк: {bank}. Выбрана валюта: {currency}",
                 replyMarkup: replyMarkup
             );
+        }
+
+
+        public Task ErrorHandler(ITelegramBotClient botClient, Exception error, CancellationToken cancellationToken)
+        {
+            var ErrorMessage = error switch
+            {
+                ApiRequestException apiRequestException
+                    => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                _ => error.ToString()
+            };
+
+            Console.WriteLine(ErrorMessage);
+            return Task.CompletedTask;
         }
 
     }

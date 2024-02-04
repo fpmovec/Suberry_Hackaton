@@ -11,12 +11,13 @@ namespace Syberry.Web.Controllers;
 public class InfoController: ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
+
     private readonly IAlpfaBankService _alpfaBankService;
+
     private readonly INationalBankService _nationalBankService;
 
-    public InfoController(
-        IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService, INationalBankService nationalBankService)
+    public InfoController(IBelarusBankService belarusBankService, IAlpfaBankService alpfaBankService,
+        INationalBankService nationalBankService)
     {
         _alpfaBankService = alpfaBankService;
         _nationalBankService = nationalBankService;
@@ -24,12 +25,16 @@ public class InfoController: ControllerBase
     }
     
     [HttpGet("/banks")]
+
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetBanksList()
         => Ok(Constants.BanksLists);
 
+
     [HttpGet("/banks/{bankName:bank}/currencies")]
+
     [ProducesResponseType(StatusCodes.Status200OK)]
+
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCurrenciesByBankName([FromRoute] string bankName)
     {
@@ -46,8 +51,11 @@ public class InfoController: ControllerBase
         return BadRequest();
     }
     
+
     [HttpGet("/Rate")]
+
     [ProducesResponseType(StatusCodes.Status200OK)]
+
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Task3 (string currencyCode, string bankName, DateTime date)
     {
@@ -72,8 +80,11 @@ public class InfoController: ControllerBase
         return Ok(c);
     }
     
+
     [HttpGet("/Rate/rates")]
+
     [ProducesResponseType(StatusCodes.Status200OK)]
+
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Task4 (string currencyCode, string bankName, DateTime from, DateTime to)
     {

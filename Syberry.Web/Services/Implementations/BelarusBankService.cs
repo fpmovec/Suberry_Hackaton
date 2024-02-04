@@ -11,14 +11,13 @@ public class BelarusBankService : IBelarusBankService
 {
     //private readonly ICacheService _CacheService;
     private readonly AppSettings _settings;
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = new();
     
-    public BelarusBankService(IOptions<AppSettings> options,
+    public BelarusBankService(IOptions<AppSettings> options
         //ICacheService cacheService,
-        HttpClient client)
+    )
     {
         //_CacheService = cacheService;
-        _client = client;
         _settings = options.Value;
     }
     
@@ -31,8 +30,9 @@ public class BelarusBankService : IBelarusBankService
                     
                     var rates = new List<Rate>();
                     
-                    var pageResponse = await _client.GetAsync(_settings.BelarusBankSettings.RatesUrl);
-                    
+                    var pageResponse = await _client.GetAsync("https://belarusbank.by/api/kurs_cards");
+
+
                     var content = await pageResponse.Content.ReadAsStringAsync();
             
                     var jToken = JToken.Parse(content);

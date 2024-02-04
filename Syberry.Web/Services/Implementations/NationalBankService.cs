@@ -32,7 +32,7 @@ public class NationalBankService : INationalBankService
                     
             var rates = new List<Rate>();
                     
-            var pageResponse = await _client.GetAsync(_settings.NationalBankSettings.RatesUrl);
+            var pageResponse = await _client.GetAsync("https://api.nbrb.by/exrates/rates?periodicity=0");
                     
             var content = await pageResponse.Content.ReadAsStringAsync();
             

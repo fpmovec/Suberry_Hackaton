@@ -9,18 +9,21 @@ namespace Syberry.Web.Controllers;
 public class RatesController : ControllerBase
 {
     private readonly IBelarusBankService _belarusBankService;
+
     private readonly IAlpfaBankService _alpfaBankService;
+
     private readonly INationalBankService _nationalBank;
 
-    public RatesController(
-        IBelarusBankService belarusBankService,
-        IAlpfaBankService alpfaBankService, INationalBankService nationalBank)
+
+    public RatesController(IBelarusBankService belarusBankService, IAlpfaBankService alpfaBankService,
+        INationalBankService nationalBank)
     {
         _alpfaBankService = alpfaBankService;
         _nationalBank = nationalBank;
         _belarusBankService = belarusBankService;
     }
     
+
     [HttpGet]
     public async Task<IActionResult> ParseRates()
     {

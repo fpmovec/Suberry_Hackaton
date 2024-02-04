@@ -8,15 +8,14 @@ namespace Syberry.Web.Services.Implementations;
 
 public class AlpfaBankService : IAlpfaBankService
 {
-    private readonly HttpClient _client;
+    private readonly HttpClient _client = new();
     private readonly AppSettings _settings;
     //private readonly ICacheService _cacheService;
     
-    public AlpfaBankService(IOptions<AppSettings> settings, HttpClient client
+    public AlpfaBankService(IOptions<AppSettings> settings
         //ICacheService cacheService
         )
     {
-        _client = client;
         //_cacheService = cacheService;
         _settings = settings.Value;
     }
@@ -30,7 +29,7 @@ public class AlpfaBankService : IAlpfaBankService
         //{
             var alpfaRates = new List<AlpfabankRateDto>();
         
-            var pageResponse = await _client.GetAsync(_settings.AlphaBankSettings.RatesUrl);
+            var pageResponse = await _client.GetAsync("https://developerhub.alfabank.by:8273/partner/1.0.1/public/rates");
         
             var content = await pageResponse.Content.ReadAsStringAsync();
 
